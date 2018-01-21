@@ -1,10 +1,11 @@
 package org.bstick12.controller;
 
-import com.google.common.collect.Lists;
+import org.bstick12.api.SurveillanceService;
+import org.bstick12.api.Suspect;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = SurveillanceController.SURVEILLANCE_API)
@@ -12,27 +13,27 @@ public class SurveillanceController {
 
     public static final String SURVEILLANCE_API = "/v1/surveillances";
 
-    public HashSet<String> suspects = new HashSet<>();
+    @Autowired
+    private SurveillanceService surveillanceService;
 
     @PostMapping
-    public String surveillance(String suspect) {
-        suspects.add(suspect);
-        return suspect;
+    public String surveil(@RequestBody Suspect suspect) {
+        return surveillanceService.surveil(suspect);
     }
 
     @GetMapping
-    public List<String> suspects() {
-        return Lists.newArrayList(suspects);
+    public Map<String, Suspect> suspects() {
+        return surveillanceService.suspects();
     }
 
     @DeleteMapping(value = "/{suspect}")
-    public void closeCase(@PathVariable("suspect") String suspect) {
-        suspects.remove(suspect);
+    public Suspect closeCase(@PathVariable("suspect") String suspect) {
+        return surveillanceService.closeCase(suspect);
     }
 
     @GetMapping(value = "/{suspect}")
-    public boolean evidence(@PathVariable("suspect") String suspect) {
-        return suspects.contains(suspect);
+    public Suspect evidence(@PathVariable("suspect") String suspect) {
+        return surveillanceService.evidence(suspect);
     }
 
 
